@@ -1,0 +1,13 @@
+{% spaceless %}
+<nav class="block {{widget.classes}}">
+	{% if widget.show_title %}
+    <div class="widget-head">
+		<h4>{% block widget_title %}{{widget.title}}{% endblock %}</h4>
+	</div>
+	{% endif %}
+    <div class="widget-body clearfix">
+    {% block widget_body %}
+    {% endblock %}
+    </div>
+</nav>
+{% endspaceless %}
