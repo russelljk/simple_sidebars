@@ -70,6 +70,18 @@ class WidgetOption(object):
                 return self.default
         return options[key]
 
+class IntegerOption(WidgetOption):
+    def get_field(self):
+        return forms.IntegerField(label=self.label, required=self.required, initial=self.default)
+
+class URLOption(WidgetOption):
+    def get_field(self):
+        return forms.URLField(label=self.label, required=self.required, initial=self.default)
+
+class EmailOption(WidgetOption):
+    def get_field(self):
+        return forms.EmailField(label=self.label, required=self.required, initial=self.default)
+        
 class BooleanOption(WidgetOption):
     def get_field(self):
         return forms.BooleanField(label=self.label, required=self.required, initial=self.default)
