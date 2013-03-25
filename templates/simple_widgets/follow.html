@@ -1,0 +1,38 @@
+{% extends 'simple_widgets/base.html' %}
+
+{% block widget_body %}
+    {% if widget.twitter_name %}
+    <div class="twitter-block">
+        <a href="https://twitter.com/{{widget.twitter_name}}" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @{{widget.twitter_name}}</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    </div>
+    {% endif %}
+	{% if widget.facebook_url %}
+    <div class="clearfix"><div style="float:left; width: 100%" >
+        <img style="vertical-align: top;" src="/static/images/joinus-fb.png" alt="Join Us On Facebook" />
+    </div>
+    <div style="float:left; width: 100%" >
+    <div id="fb-root"></div>
+    <script>(function(d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));</script>
+    <div style="float:left;" ><a href="{{widget.facebook_url}}" title="Facebook"><img style="vertical-align: top; margin-right: 10px" src="/static/images/fb32.png" alt="Facebook" width="32" height="32" /></a></div><div class="fb-like" data-href="{{widget.facebook_url}}" data-layout="button_count" data-send="false" data-width="50" data-show-faces="false" data-font="verdana"></div>
+	{% endif %}
+    {% if widget.rss_view or widget.atom_view %}
+        <div class="feeds">
+            <ul class="clearfix">
+            {% if widget.rss_view %}
+                <li><a class="feed-link" href="{{widget.rss_url}}">Rss</a></li>
+            {% endif %}
+            {% if widget.atom_view %}
+                <li><a class="feed-link" href="{{widget.atom_url}}">Atom</a></li>
+            {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}
+
