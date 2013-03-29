@@ -8,7 +8,7 @@ register = template.Library()
 Sidebar = models.get_model('simple_sidebars', 'Sidebar')
 CACHE_PREFIX = "simple_sidebars_"
 
-def do_get_sidebar(parser, token):    
+def get_sidebar(parser, token, Node):    
     # split_contents() knows not to split quoted strings.
     tokens = token.split_contents()
     sidebar_title = 5
@@ -22,11 +22,13 @@ def do_get_sidebar(parser, token):
         cache_time = 0
     if len(tokens) == 3:
         tag_name, sidebar_title, cache_time = tokens
+    
     # Check to see if the sidebar_title is properly double/single quoted
     if not (sidebar_title[0] == sidebar_title[-1] and sidebar_title[0] in ('"', "'")):
         raise template.TemplateSyntaxError, "%r tag's argument should be in quotes" % tag_name
+    
     # Send sidebar_title without quotes and caching time
-    return SidebarNode(sidebar_title[1:-1], cache_time)
+    return Node(sidebar_title[1:-1], cache_time)
 
 from django.template.loader import render_to_string
 
@@ -35,7 +37,10 @@ class SidebarNode(template.Node):
        self.key = key
        self.cache_time = cache_time
        self.cache_key = CACHE_PREFIX + key
-       
+    
+    def render_sidebar(self, sidebar):
+        raise NotImplementedError
+    
     def render(self, context):
         try:
             if self.cache_time:
@@ -43,13 +48,30 @@ class SidebarNode(template.Node):
                 result = blogcache.get()
                 if not result:
                     sidebar = Sidebar.objects.get(title=self.key)
-                    result = mark_safe(sidebar.render())
+                    result = self.render_sidebar(sidebar)
                     blogcache.set(result)
                 return result
             else:
                 sidebar = Sidebar.objects.get(title=self.key)
-                return mark_safe(sidebar.render())
+                return self.render_sidebar(sidebar)
         except Sidebar.DoesNotExist:
-            return mark_safe(u'<div class="error">Sidebar Couldnot be Found</div>')
-            
-register.tag('simple_sidebar', do_get_sidebar)
+            return mark_safe(u'<div class="error">Sidebar Could Not Be Found.</div>')
+
+class RenderNode(SidebarNode):
+    def render_sidebar(self, sidebar):
+        result = mark_safe(sidebar.render())
+        return result
+
+class MediaNode(SidebarNode):
+    def render_sidebar(self, sidebar):
+        result = mark_safe(sidebar.render_media())
+        return result
+
+def get_sidebar_render(parser, token):
+    return get_sidebar(parser, token, RenderNode)
+
+def get_sidebar_media(parser, token):
+    return get_sidebar(parser, token, MediaNode)
+
+register.tag('simple_sidebar', get_sidebar_render)
+register.tag('sidebar_media', get_sidebar_media)

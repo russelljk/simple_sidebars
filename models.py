@@ -64,6 +64,21 @@ class Sidebar(models.Model):
         items = [x for x, y in WidgetBase.widget_manager.items()]
         return items
     
+    def render_media(self):
+        all_js = []
+        all_css = []
+        for widget in self.widgets:
+            if hasattr(widget, 'Media'):
+                _Media = widget.Media
+                if hasattr(_Media, 'js'):
+                    for js in _Media.js:
+                        all_js.append( '<script type="text/javascript" src="{0}"></script>'.format(js) )
+                if hasattr(_Media, 'css'):
+                    for media in _Media.css:
+                        for css in _Media.css[media]:
+                            all_css.append('<link rel="stylesheet" type="text/css" media="{0}" href="{1}" />'.format(media, css))
+        return ''.join(all_js + all_css)
+                
     def render(self):
         template_name = self.template if self.template else 'simple_sidebars/base.html'
         return render_to_string(template_name, { 'sidebar': self, 'widgets': self.widgets })
