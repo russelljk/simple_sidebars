@@ -34,5 +34,12 @@
             </ul>
         </div>
     {% endif %}
+	{% if widget.github_name %}
+		<div>
+			<ul class="github">
+				<li><a class="github-link" href="{{widget.github_url}}">{{widget.github_name}}</a></li>
+			</ul>
+		</div>
+	{% endif %}
 {% endblock %}
 

@@ -27,14 +27,21 @@ class Sidebar(models.Model):
     def load_schema(self):
         if not self.widget_schema:
             return
-        self.schema = simplejson.loads( self.widget_schema )
         
+        self.schema = simplejson.loads( self.widget_schema )
+        pos = 1
         for option in self.schema:
             name = option['kind']
             _WidgetClass = WidgetBase.widget_manager.lookup(name)
             w = _WidgetClass(option)
+            w.position = pos
             self.widgets.append(w)
-    
+            pos += 1
+        
+        if self.widgets:
+            self.widgets[0].first_widget = True
+            self.widgets[-1].last_widget = True
+        
     def save_schema(self):
         schema = []
         for w in self.widgets:            

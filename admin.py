@@ -120,7 +120,7 @@ class SidebarAdmin(admin.ModelAdmin):
         
         messages.success(request, msg)
         return HttpResponseRedirect('../../../')
-                    
+    
     class Media:
         js = (
             'https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js',

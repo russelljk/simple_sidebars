@@ -1,4 +1,5 @@
 from simple_sidebars import widgets
+from django.utils.safestring import mark_safe
 
 class FollowWidget(widgets.Widget):
     widget_kind = 'follow'
@@ -20,7 +21,16 @@ class FollowWidget(widgets.Widget):
     
     atom_url = property(get_atom_url)
     
+    def get_github_url(self):
+        if self.github_name:
+            return 'http://github.com/{0}/'.format(self.github_name)
+        return None
+    
+    github_url = property(get_github_url)
+    
+    email = widgets.EmailOption(max_length=255, required=False)
     twitter_name = widgets.WidgetOption(max_length=255, required=False)
     facebook_url = widgets.URLOption(max_length=255, required=False)
     rss_view = widgets.WidgetOption(max_length=100, required=False)
     atom_view = widgets.WidgetOption(max_length=100, required=False)
+    github_name = widgets.WidgetOption(max_length=255, required=False)

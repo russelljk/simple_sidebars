@@ -36,7 +36,8 @@ class WidgetOption(object):
     def __init__(self, required=False, default=None, kind=str, name=None, max_length=200):
         self.creation_order = WidgetOption.creation_counter
         WidgetOption.creation_counter += 1
-        
+        self.first_widget = False
+        self.last_widget = False
         self.default = default
         self.required = required
         self.kind = kind
@@ -175,9 +176,10 @@ class Widget(object):
     title = WidgetOption(required=False, default='')
     css_classes = TextOption(required=False, default='')
     show_title = BooleanOption(required=False, default=True)
+    template_path = TextOption(required=False, default='')
     
     def default_classes(self):
-        return ['widget']
+        return ['widget', self.widget_kind + '-widget']
         
     def get_classes(self):
         cls = self.css_classes.split(',')        
@@ -237,7 +239,11 @@ class Widget(object):
             'widget': self,
         }
         
-        return render_to_string(self.widget_template, data)
+        if self.template_path:
+            template = self.template_path
+        else:
+            template = self.widget_template
+        return render_to_string(template, data)
     
     def get_options(self):
         pass

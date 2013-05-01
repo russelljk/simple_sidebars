@@ -36,7 +36,7 @@ class SidebarNode(template.Node):
     def __init__(self, key, cache_time=0):
        self.key = key
        self.cache_time = cache_time
-       self.cache_key = CACHE_PREFIX + key
+       self.cache_key = self.CACHEPREFIX + key
     
     def render_sidebar(self, sidebar):
         raise NotImplementedError
@@ -58,11 +58,15 @@ class SidebarNode(template.Node):
             return mark_safe(u'<div class="error">Sidebar Could Not Be Found.</div>')
 
 class RenderNode(SidebarNode):
+    CACHEPREFIX = 'simplesidebar_'
+            
     def render_sidebar(self, sidebar):
         result = mark_safe(sidebar.render())
         return result
 
 class MediaNode(SidebarNode):
+    CACHEPREFIX = 'simplemedia_'
+    
     def render_sidebar(self, sidebar):
         result = mark_safe(sidebar.render_media())
         return result

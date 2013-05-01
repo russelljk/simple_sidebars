@@ -1,5 +1,5 @@
 {% spaceless %}
-<nav class="block {{widget.classes}}">
+<aside class="block {{widget.classes}} widget-{{widget.position}}{% if widget.first_widget %} widget-first{% endif %}{% if widget.last_widget %} widget-last{% endif %}">
 	{% if widget.show_title %}
     <div class="widget-head">
 		<h4>{% block widget_title %}{{widget.title}}{% endblock %}</h4>
@@ -9,5 +9,5 @@
     {% block widget_body %}
     {% endblock %}
     </div>
-</nav>
+</aside>
 {% endspaceless %}
