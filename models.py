@@ -41,7 +41,7 @@ class Sidebar(models.Model):
         if self.widgets:
             self.widgets[0].first_widget = True
             self.widgets[-1].last_widget = True
-        
+    
     def save_schema(self):
         schema = []
         for w in self.widgets:            
@@ -52,7 +52,7 @@ class Sidebar(models.Model):
     
     def get_widget(self, i):
         return self.widgets[i]
-            
+    
     def add_widget(self, w):
         self.widgets.append(w)
     
@@ -85,7 +85,7 @@ class Sidebar(models.Model):
                         for css in _Media.css[media]:
                             all_css.append('<link rel="stylesheet" type="text/css" media="{0}" href="{1}" />'.format(media, css))
         return ''.join(all_js + all_css)
-                
+    
     def render(self):
         template_name = self.template if self.template else 'simple_sidebars/base.html'
         return render_to_string(template_name, { 'sidebar': self, 'widgets': self.widgets })
