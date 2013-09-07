@@ -2,13 +2,14 @@ from django import template
 from django.db import models
 from mylibs.blogcache import BlogCache
 from django.utils.safestring import mark_safe
+from django.template.loader import render_to_string
 
 register = template.Library()
 
 Sidebar = models.get_model('simple_sidebars', 'Sidebar')
 CACHE_PREFIX = "simple_sidebars_"
 
-def get_sidebar(parser, token, Node):    
+def find_sidebar(parser, token, Node):    
     # split_contents() knows not to split quoted strings.
     tokens = token.split_contents()
     sidebar_title = 5
@@ -30,7 +31,13 @@ def get_sidebar(parser, token, Node):
     # Send sidebar_title without quotes and caching time
     return Node(sidebar_title[1:-1], cache_time)
 
-from django.template.loader import render_to_string
+@register.filter
+def get_sidebar(key):
+    try:
+        sidebar = Sidebar.objects.get(title=key)
+        return sidebar
+    except:
+        return None
 
 class SidebarNode(template.Node):
     def __init__(self, key, cache_time=0):
@@ -72,10 +79,10 @@ class MediaNode(SidebarNode):
         return result
 
 def get_sidebar_render(parser, token):
-    return get_sidebar(parser, token, RenderNode)
+    return find_sidebar(parser, token, RenderNode)
 
 def get_sidebar_media(parser, token):
-    return get_sidebar(parser, token, MediaNode)
+    return find_sidebar(parser, token, MediaNode)
 
 register.tag('simple_sidebar', get_sidebar_render)
 register.tag('sidebar_media', get_sidebar_media)

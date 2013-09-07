@@ -1,13 +1,12 @@
 from simple_sidebars.models import Sidebar
 from django.contrib import admin
-from django.conf.urls.defaults import patterns
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect,Http404, HttpResponse
 from django.shortcuts       import render_to_response
 from django.template        import RequestContext
 from django.core.urlresolvers import reverse
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from django.utils.translation import ugettext as _
 from django.contrib import messages
 from django.utils.encoding import force_unicode
