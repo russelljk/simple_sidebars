@@ -20,10 +20,8 @@ class SidebarAdmin(admin.ModelAdmin):
             url(r'^(?P<sidebar_pk>[-\w]+)/items/add/$', self.admin_site.admin_view(self.add_sidebar_item), name='simple_sidebars_sidebar_additem'),
             url(r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/$', self.admin_site.admin_view(self.edit_sidebar_item), name='simple_sidebars_sidebar_edititem'),
             (r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/delete/$', self.admin_site.admin_view(self.delete_sidebar_item)),
-            # (r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/history/$', self.admin_site.admin_view(self.history_sidebar_item)),
             (r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/move_up/$', self.admin_site.admin_view(self.move_up_item)),
             (r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/move_down/$', self.admin_site.admin_view(self.move_down_item)),
-            # url(r'^item_changelist/$', RedirectView.as_view(url='/'), name='sidebars_sidebaritem_changelist'),
         )
         return my_urls + urls
     
@@ -58,7 +56,7 @@ class SidebarAdmin(admin.ModelAdmin):
             form = _WidgetForm(widget.get_schema_data())
         kind = widget.widget_kind
         return render_to_response('admin/simple_sidebars/sidebar/widget_add.html', { 'kind':kind, 'form': form, 'sidebar': sidebar, 'widget': widget}, context_instance=RequestContext(request))
-                
+    
     def add_sidebar_item(self, request, sidebar_pk):        
         sidebar = self.get_object_with_change_permissions(request, Sidebar, sidebar_pk)        
         if request.method == "POST":
@@ -108,7 +106,7 @@ class SidebarAdmin(admin.ModelAdmin):
         
         messages.success(request, msg)
         return HttpResponseRedirect('../../../')
-        
+    
     def move_down_item(self, request, sidebar_pk, widget_id):
         sidebar = self.get_object_with_change_permissions(request, Sidebar, sidebar_pk)
         curr = int(widget_id)

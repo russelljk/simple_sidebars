@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n adminmedia %}
+{% load i18n %}
 
 {% block after_related_objects %}
 {% if change %}
@@ -36,7 +36,6 @@
 		<tbody>
 		  {% for widget in original.widgets %}
 			<tr class="{% cycle 'row1' 'row2' %}">
-
 					<th style="width:auto">
 						<a href="items/{{forloop.counter0}}/">{% if widget.title %}{{ widget.title|safe }}{% else %}<em>({{widget.widget_kind}})</em>{% endif %}</a>
 					</th>

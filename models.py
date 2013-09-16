@@ -9,6 +9,10 @@ from django.core.exceptions import ObjectDoesNotExist
 class WidgetDoesNotExist(ObjectDoesNotExist):
     pass
 
+'''
+Sidebar model which can contain multiple widgets.
+'''
+
 class Sidebar(models.Model):
     def __init__(self, *args, **kwargs):
         super(Sidebar, self).__init__(*args, **kwargs)
@@ -71,21 +75,24 @@ class Sidebar(models.Model):
         items = [x for x, y in WidgetBase.widget_manager.items()]
         return items
     
-    def render_media(self):
+    def render_media(self, css=True, js=True):
+        '''
+        Renders all css and js media in this widget.
+        '''
         all_js = []
         all_css = []
         for widget in self.widgets:
             if hasattr(widget, 'Media'):
                 _Media = widget.Media
-                if hasattr(_Media, 'js'):
+                if js and hasattr(_Media, 'js'):
                     for js in _Media.js:
                         all_js.append( '<script type="text/javascript" src="{0}"></script>'.format(js) )
-                if hasattr(_Media, 'css'):
+                if css and hasattr(_Media, 'css'):
                     for media in _Media.css:
                         for css in _Media.css[media]:
                             all_css.append('<link rel="stylesheet" type="text/css" media="{0}" href="{1}" />'.format(media, css))
         return mark_safe(''.join(all_js + all_css))
-    
+                
     def render(self):
         template_name = self.template if self.template else 'simple_sidebars/base.html'
         return render_to_string(template_name, { 'sidebar': self, 'widgets': self.widgets })

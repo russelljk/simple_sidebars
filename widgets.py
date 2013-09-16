@@ -8,6 +8,7 @@ class OptionDoesNotExist(ObjectDoesNotExist):
 
 class WidgetManager(object):
     valid_widget_name = re.compile(r'^[a-z_\-][a-z0-9_\-]*$')
+    
     def __init__(self, base_class):
         self.widgets = {}
         self._WidgetClass = base_class
@@ -30,6 +31,25 @@ class WidgetManager(object):
             _Class = self.lookup(k)
             return _Class.widget_form
 
+'''
+WidgetOption is the base option class for widgets. Options are added to widgets
+in the same way as Fields are added to Django Models.
+
+Create a new Widget instance and the add the options as class variables.
+
+For Example:
+
+    class MyWidget(Widget):
+        name = WidgetOption(required=True)
+        email = EmailOption(default='contact@example.com')
+        ...
+
+Then you can access the values via instances of the Widget.
+
+my_widget.name
+my_widget.email
+
+'''
 class WidgetOption(object):
     creation_counter = 0
     
