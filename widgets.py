@@ -91,9 +91,9 @@ class WidgetOption(object):
                 return self.default
         return options[key]
 
-class TextWidget(WidgetOption):
+class TextOption(WidgetOption):
     def get_field(self):
-        field = super(TextWidget, self).get_field()
+        field = super(TextOption, self).get_field()
         field.widget = forms.Textarea()
         return field
 
