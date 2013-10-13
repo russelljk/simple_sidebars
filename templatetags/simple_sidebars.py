@@ -1,9 +1,9 @@
 from django import template
 from django.db import models
-from mylibs.blogcache import BlogCache
+from mylibs.helpers.caching import cache_safe_set, cache_safe_get
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
-
+from django.core.cache import cache
 register = template.Library()
 
 Sidebar = models.get_model('simple_sidebars', 'Sidebar')
@@ -42,7 +42,8 @@ def get_sidebar(key):
 class SidebarNode(template.Node):
     def __init__(self, key, cache_time=0):
        self.key = key
-       self.cache_time = cache_time
+       self.cache_time = int(cache_time)
+       
        self.cache_key = self.CACHEPREFIX + key
     
     def render_sidebar(self, sidebar):
@@ -50,32 +51,32 @@ class SidebarNode(template.Node):
     
     def render(self, context):
         try:
-            if self.cache_time:
-                blogcache = BlogCache(self.cache_key)
-                result = blogcache.get()
+            if self.cache_time > 0:
+                result = cache_safe_get(self.cache_key)
+                
                 if not result:
                     sidebar = Sidebar.objects.get(title=self.key)
                     result = self.render_sidebar(sidebar)
-                    blogcache.set(result)
-                return result
+                    cache_safe_set(self.cache_key, result, 1800)
+                return mark_safe(result)
             else:
                 sidebar = Sidebar.objects.get(title=self.key)
-                return self.render_sidebar(sidebar)
+                return mark_safe(self.render_sidebar(sidebar))
         except Sidebar.DoesNotExist:
             return mark_safe(u'<div class="error">Sidebar Could Not Be Found.</div>')
 
 class RenderNode(SidebarNode):
-    CACHEPREFIX = 'simplesidebar_'
-            
+    CACHEPREFIX = 'simplesidebar:'
+    
     def render_sidebar(self, sidebar):
-        result = mark_safe(sidebar.render())
+        result = sidebar.render()
         return result
 
 class MediaNode(SidebarNode):
-    CACHEPREFIX = 'simplemedia_'
+    CACHEPREFIX = 'simplesidebar_media:'
     
     def render_sidebar(self, sidebar):
-        result = mark_safe(sidebar.render_media())
+        result = sidebar.render_media()
         return result
 
 def get_sidebar_render(parser, token):
