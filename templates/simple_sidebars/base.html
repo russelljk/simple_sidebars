@@ -1,3 +1,4 @@
 {% for widget in widgets %}
-    {{ widget.render }}
+    {% load simple_sidebars %}
+    {% render_widget widget %}
 {% endfor %}

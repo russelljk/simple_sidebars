@@ -93,6 +93,6 @@ class Sidebar(models.Model):
                             all_css.append('<link rel="stylesheet" type="text/css" media="{0}" href="{1}" />'.format(media, css))
         return mark_safe(''.join(all_js + all_css))
                 
-    def render(self):
+    def render(self, request=None):
         template_name = self.template if self.template else 'simple_sidebars/base.html'
-        return render_to_string(template_name, { 'sidebar': self, 'widgets': self.widgets })
+        return render_to_string(template_name, { 'sidebar': self, 'widgets': self.widgets, 'request': request })

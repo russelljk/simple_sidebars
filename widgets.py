@@ -254,10 +254,15 @@ class Widget(object):
             value = option.parse_option(name, data)
             setattr(self, name, value)
     
-    def render(self):
+    def render(self, context=None):
         data = {
-            'widget': self,
+            'widget': self
         }
+        
+        if context is not None:
+            request = context.get('request', None)
+            if request:
+                data['request'] = request
         
         if self.template_path:
             template = self.template_path

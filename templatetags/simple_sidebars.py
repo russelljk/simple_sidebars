@@ -43,13 +43,15 @@ class SidebarNode(template.Node):
     def __init__(self, key, cache_time=0):
        self.key = key
        self.cache_time = int(cache_time)
-       
+       self.request = None
        self.cache_key = self.CACHEPREFIX + key
     
     def render_sidebar(self, sidebar):
         raise NotImplementedError
     
     def render(self, context):
+        self.request = context.get('request', None)
+        
         try:
             if self.cache_time > 0:
                 result = cache_safe_get(self.cache_key)
@@ -69,7 +71,7 @@ class RenderNode(SidebarNode):
     CACHEPREFIX = 'simplesidebar:'
     
     def render_sidebar(self, sidebar):
-        result = sidebar.render()
+        result = sidebar.render(self.request)
         return result
 
 class MediaNode(SidebarNode):
@@ -87,3 +89,7 @@ def get_sidebar_media(parser, token):
 
 register.tag('simple_sidebar', get_sidebar_render)
 register.tag('sidebar_media', get_sidebar_media)
+
+@register.simple_tag(takes_context=True)
+def render_widget(context, widget):
+    return widget.render(context)
