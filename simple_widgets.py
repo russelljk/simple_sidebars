@@ -31,6 +31,8 @@ class FollowWidget(widgets.Widget):
     email = widgets.EmailOption(max_length=255, required=False)
     twitter_name = widgets.WidgetOption(max_length=255, required=False)
     facebook_url = widgets.URLOption(max_length=255, required=False)
+    google_plus_url = widgets.URLOption(max_length=255, required=False)
+    youtube_url = widgets.URLOption(max_length=255, required=False)
     rss_view = widgets.WidgetOption(max_length=100, required=False)
     atom_view = widgets.WidgetOption(max_length=100, required=False)
     github_name = widgets.WidgetOption(max_length=255, required=False)
