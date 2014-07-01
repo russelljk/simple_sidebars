@@ -9,8 +9,7 @@ register = template.Library()
 Sidebar = models.get_model('simple_sidebars', 'Sidebar')
 CACHE_PREFIX = "simple_sidebars_"
 
-def find_sidebar(parser, token, Node):    
-    # split_contents() knows not to split quoted strings.
+def find_sidebar(parser, token, Node):
     tokens = token.split_contents()
     sidebar_title = 5
     cache_time = 0
@@ -30,6 +29,39 @@ def find_sidebar(parser, token, Node):
     
     # Send sidebar_title without quotes and caching time
     return Node(sidebar_title[1:-1], cache_time)
+
+def get_sidebar(parser, token):
+    # Usage: {% get_sidebar 'Sidebar Name' as 'VariableName' %}
+    
+    tokens = token.split_contents()
+    
+    if len(tokens) != 4:
+        raise template.TemplateSyntaxError, "%r tag should have 3 arguments" % (tokens[0],)
+    
+    lookup, skip, var_name = tokens[1:]
+        
+    if skip != 'as':
+        raise template.TemplateSyntaxError, "%r tag's second argument should be as without quotes."
+            
+    if (not is_quoted(lookup)) or (not is_quoted(var_name)):
+        raise template.TemplateSyntaxError, "%r tag's argument should be in quotes" % tokens[0]
+    
+    lookup = lookup[1:-1]
+        
+    return GetSidebar(lookup, var_name[1:-1])
+
+class GetSidebar(template.Node):
+    def __init__(self, lookup, option, var_name):
+        self.lookup = lookup
+        self.var_name = var_name
+    
+    def render(self, context):
+        try:
+            x = Sidebar.objects.get(title=self.lookup)
+        except:
+            x = None
+        context[self.var_name] = x            
+        return ''
 
 @register.filter
 def get_sidebar(key):
@@ -87,8 +119,9 @@ def get_sidebar_render(parser, token):
 def get_sidebar_media(parser, token):
     return find_sidebar(parser, token, MediaNode)
 
-register.tag('simple_sidebar', get_sidebar_render)
-register.tag('sidebar_media', get_sidebar_media)
+register.tag('simple_sidebar',  get_sidebar_render)
+register.tag('sidebar_media',   get_sidebar_media)
+register.tag('get_sidebar',     get_sidebar)
 
 @register.simple_tag(takes_context=True)
 def render_widget(context, widget):
