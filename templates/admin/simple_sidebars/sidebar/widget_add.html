@@ -11,7 +11,7 @@
 <div class="breadcrumbs">
 <ul>
     <li><a href="{% url 'admin:index' %}">{% trans "Home" %}</a></li>
-    <li><a href="{% url 'admin:app_list' 'simple_sidebars' %}">{% trans "Courseware" %}</a></li>
+    <li><a href="{% url 'admin:app_list' 'simple_sidebars' %}">{% trans "Simple sidebars" %}</a></li>
     <li><a href="{% url 'admin:simple_sidebars_sidebar_change' sidebar.pk %}">{{ sidebar.title }}</a></li>
 	<li>Widget</li>
 </ul>
@@ -23,7 +23,8 @@
 {% block content %}
 <form action='.' method='post'>
 	{% csrf_token %}
-	<input type="hidden" name="kind" value="{{kind}}" />
+	<input type="hidden" name="kind"    value="{{kind}}" />
+    <input type="hidden" name="sidebar_version" value="{{sidebar.version}}" />
 	<fieldset class="module aligned">
 		{% for field in form %}
         <div class="form-row">

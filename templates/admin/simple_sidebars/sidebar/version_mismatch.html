@@ -1,0 +1,25 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static admin_modify %}
+
+{% block extrahead %}{{ block.super }}
+{% url 'admin:jsi18n' as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:"../../../jsi18n/" }}"></script>
+{{ media }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<ul>
+    <li><a href="{% url 'admin:index' %}">{% trans "Home" %}</a></li>
+    <li><a href="{% url 'admin:app_list' 'simple_sidebars' %}">{% trans "Simple sidebars" %}</a></li>
+    <li><a href="{% url 'admin:simple_sidebars_sidebar_change' sidebar.pk %}">{{ sidebar.title }}</a></li>
+	<li>Version Mismatch</li>
+</ul>
+</div>
+{% endblock %}
+
+{% block content %}
+	<h1>Version Mismatch</h1>
+    <p>The sidebar you were editing has changed since you last loaded the page.</p>
+    <p>Return to editing <a href="{% url 'admin:simple_sidebars_sidebar_change' sidebar.pk %}">Sidebar {{sidebar.title}}</a> and try again.</p>
+{% endblock %}

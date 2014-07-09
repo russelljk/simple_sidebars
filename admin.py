@@ -13,12 +13,14 @@ from django.utils.encoding import force_unicode
 
 class SidebarAdmin(admin.ModelAdmin):
     exclude = ('widget_schema',)
+    readonly_fields = ('version',)
     
     def get_urls(self):
         urls = super(SidebarAdmin, self).get_urls()
         my_urls = patterns('',
             url(r'^(?P<sidebar_pk>[-\w]+)/items/add/$', self.admin_site.admin_view(self.add_sidebar_item), name='simple_sidebars_sidebar_additem'),
             url(r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/$', self.admin_site.admin_view(self.edit_sidebar_item), name='simple_sidebars_sidebar_edititem'),
+            url(r'^(?P<sidebar_pk>[-\w]+)/version_mismatch/$', self.admin_site.admin_view(self.version_mismatch), name='simple_sidebars_sidebar_version_mismatch'),            
             (r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/delete/$', self.admin_site.admin_view(self.delete_sidebar_item)),
             (r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/move_up/$', self.admin_site.admin_view(self.move_up_item)),
             (r'^(?P<sidebar_pk>[-\w]+)/items/(?P<widget_id>[-\w]+)/move_down/$', self.admin_site.admin_view(self.move_down_item)),
@@ -49,13 +51,21 @@ class SidebarAdmin(admin.ModelAdmin):
         if request.method == "POST":
             form = _WidgetForm(request.POST)
             if form.is_valid():
-                widget.update_options(form.cleaned_data)                
-                sidebar.save()
+                version = request.POST['sidebar_version']
+                if sidebar.is_version(version):
+                    widget.update_options(form.cleaned_data)                
+                    sidebar.save()
+                else:
+                    return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))                    
                 return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_change', args=[sidebar_pk]))
         else:
             form = _WidgetForm(widget.get_schema_data())
         kind = widget.widget_kind
         return render_to_response('admin/simple_sidebars/sidebar/widget_add.html', { 'kind':kind, 'form': form, 'sidebar': sidebar, 'widget': widget}, context_instance=RequestContext(request))
+    
+    def version_mismatch(self, request, sidebar_pk): 
+        sidebar = self.get_object_with_change_permissions(request, Sidebar, sidebar_pk)
+        return render_to_response('admin/simple_sidebars/sidebar/version_mismatch.html', { 'sidebar': sidebar, }, context_instance=RequestContext(request))
     
     def add_sidebar_item(self, request, sidebar_pk):        
         sidebar = self.get_object_with_change_permissions(request, Sidebar, sidebar_pk)        
@@ -72,14 +82,18 @@ class SidebarAdmin(admin.ModelAdmin):
         if request.method == "POST":
             form = _WidgetForm(request.POST)
             if form.is_valid():
-                widget.update_options(form.cleaned_data)
-                sidebar.add_widget(widget)                
-                sidebar.save()
+                version = request.POST['sidebar_version']
+                if sidebar.is_version(version):
+                    widget.update_options(form.cleaned_data)
+                    sidebar.add_widget(widget)                
+                    sidebar.save()
+                else:
+                    return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))
                 return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_change', args=[sidebar_pk]))
         else:
             form = _WidgetForm()
             
-        return render_to_response('admin/simple_sidebars/sidebar/widget_add.html', { 'kind':kind, 'form': form, 'sidebar': sidebar, 'widget': widget}, context_instance=RequestContext(request))
+        return render_to_response('admin/simple_sidebars/sidebar/widget_add.html', { 'kind': kind, 'form': form, 'sidebar': sidebar, 'widget': widget}, context_instance=RequestContext(request))
     
     def delete_sidebar_item(self, request, sidebar_pk, widget_id):
         sidebar = self.get_object_with_change_permissions(request, Sidebar, sidebar_pk)
@@ -89,8 +103,12 @@ class SidebarAdmin(admin.ModelAdmin):
         if request.method == "POST":
             post = request.POST.get('post', 'no')
             if post == 'yes':
-                sidebar.remove_widget(curr)
-                sidebar.save()
+                version = request.POST['sidebar_version']
+                if sidebar.is_version(version):
+                    sidebar.remove_widget(curr)
+                    sidebar.save()
+                else:
+                    return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))
                 return HttpResponseRedirect('../../../')
         else:
             pass

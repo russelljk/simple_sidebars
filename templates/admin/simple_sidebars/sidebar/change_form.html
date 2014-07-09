@@ -14,6 +14,26 @@
 		        var kind = django.jQuery('#widget_kind').val();
 		        django.jQuery(this).attr('href', loc + '?kind=' + kind);
 	        });
+            
+            var warnChanges = function() {
+                return "Your changes have not been saved.";
+            };
+            
+            var warnUser = function() {
+            	var inputs = [];
+            	inputs = inputs.concat(django.jQuery("input"));
+            	inputs = inputs.concat(django.jQuery("select"));
+            	inputs = inputs.concat(django.jQuery("textarea"));
+            	if (inputs.length > 0) {
+            		for (var i = 0, t = inputs.length; i < t ; i++) {
+                        var inp = inputs[i];
+                        var notSubmit = !inp.closest('.submit-row').length;
+                        inp.change(function() { 
+                            window.onbeforeunload = notSubmit ? warnChanges : null;
+                        });
+            		}
+            	}
+            }();
 	    });		
 	</script>
 	  <select id="widget_kind">
@@ -32,12 +52,11 @@
 				<th></th>
 			</tr>
 		</thead>
-		
 		<tbody>
 		  {% for widget in original.widgets %}
 			<tr class="{% cycle 'row1' 'row2' %}">
 					<th style="width:auto">
-						<a href="items/{{forloop.counter0}}/">{% if widget.title %}{{ widget.title|safe }}{% else %}<em>({{widget.widget_kind}})</em>{% endif %}</a>
+						<a target="widgetEdit" href="items/{{forloop.counter0}}/">{% if widget.title %}{{ widget.title|safe }}{% else %}<em>({{widget.widget_kind}})</em>{% endif %}</a>
 					</th>
 					<td width="25%">
 						{{ widget.widget_kind }}

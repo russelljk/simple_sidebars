@@ -24,9 +24,17 @@ class Sidebar(models.Model):
     template = models.CharField(max_length=300, blank=True, null=True, default=None)
     widget_schema = models.TextField(blank=True, default='')
     css_classes = models.TextField(validators=[validators.RegexValidator(regex=r'^[a-zA-Z_\-\s]+$')], blank=True, null=True)
+    version = models.PositiveIntegerField(blank=True, default=0)
     
     def __unicode__(self):
         return self.title + ' (widgets: ' + str(len(self.widgets)) + ')'
+    
+    def is_version(self, version):
+        try:
+            version = int(version)
+            return self.version == version
+        except:
+            return False
     
     def load_schema(self):
         if not self.widget_schema:
@@ -68,6 +76,7 @@ class Sidebar(models.Model):
     
     def save(self, *args, **kwargs):
         self.save_schema()
+        self.version += 1
         return super(Sidebar, self).save(*args, **kwargs)
     
     def get_item_types(self):
