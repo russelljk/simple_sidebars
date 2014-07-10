@@ -52,11 +52,10 @@ class SidebarAdmin(admin.ModelAdmin):
             form = _WidgetForm(request.POST)
             if form.is_valid():
                 version = request.POST['sidebar_version']
-                if sidebar.is_version(version):
-                    widget.update_options(form.cleaned_data)                
-                    sidebar.save()
-                else:
-                    return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))                    
+                if not sidebar.is_version(version):
+                    return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))
+                widget.update_options(form.cleaned_data)
+                sidebar.save()
                 return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_change', args=[sidebar_pk]))
         else:
             form = _WidgetForm(widget.get_schema_data())
@@ -83,18 +82,17 @@ class SidebarAdmin(admin.ModelAdmin):
             form = _WidgetForm(request.POST)
             if form.is_valid():
                 version = request.POST['sidebar_version']
-                if sidebar.is_version(version):
-                    widget.update_options(form.cleaned_data)
-                    sidebar.add_widget(widget)                
-                    sidebar.save()
-                else:
+                if not sidebar.is_version(version):
                     return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))
+                widget.update_options(form.cleaned_data)
+                sidebar.add_widget(widget)                
+                sidebar.save()
                 return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_change', args=[sidebar_pk]))
         else:
             form = _WidgetForm()
             
         return render_to_response('admin/simple_sidebars/sidebar/widget_add.html', { 'kind': kind, 'form': form, 'sidebar': sidebar, 'widget': widget}, context_instance=RequestContext(request))
-    
+        
     def delete_sidebar_item(self, request, sidebar_pk, widget_id):
         sidebar = self.get_object_with_change_permissions(request, Sidebar, sidebar_pk)
         curr = int(widget_id)
@@ -104,11 +102,10 @@ class SidebarAdmin(admin.ModelAdmin):
             post = request.POST.get('post', 'no')
             if post == 'yes':
                 version = request.POST['sidebar_version']
-                if sidebar.is_version(version):
-                    sidebar.remove_widget(curr)
-                    sidebar.save()
-                else:
+                if not sidebar.is_version(version):
                     return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))
+                sidebar.remove_widget(curr)
+                sidebar.save()
                 return HttpResponseRedirect('../../../')
         else:
             pass
@@ -116,6 +113,10 @@ class SidebarAdmin(admin.ModelAdmin):
     
     def move_up_item(self, request, sidebar_pk, widget_id):
         sidebar = self.get_object_with_change_permissions(request, Sidebar, sidebar_pk)
+        version = request.POST['sidebar_version']
+        if not sidebar.is_version(version):
+            return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))
+        
         curr = int(widget_id)
         prev = curr - 1
         sidebar.widgets[prev], sidebar.widgets[curr] = sidebar.widgets[curr], sidebar.widgets[prev]
@@ -127,6 +128,10 @@ class SidebarAdmin(admin.ModelAdmin):
     
     def move_down_item(self, request, sidebar_pk, widget_id):
         sidebar = self.get_object_with_change_permissions(request, Sidebar, sidebar_pk)
+        version = request.POST['sidebar_version']
+        if not sidebar.is_version(version):
+            return HttpResponseRedirect(reverse('admin:simple_sidebars_sidebar_version_mismatch', args=[sidebar_pk]))
+        
         curr = int(widget_id)
         prev = curr + 1
         sidebar.widgets[prev], sidebar.widgets[curr] = sidebar.widgets[curr], sidebar.widgets[prev]
