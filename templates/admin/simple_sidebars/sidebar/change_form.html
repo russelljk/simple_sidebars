@@ -22,7 +22,7 @@
             var warnUser = function() {
             	var inputs = [];
             	inputs = inputs.concat(django.jQuery("input"));
-            	inputs = inputs.concat(django.jQuery("select"));
+            	inputs = inputs.concat(django.jQuery("select:not(#widget_kind)"));
             	inputs = inputs.concat(django.jQuery("textarea"));
             	if (inputs.length > 0) {
             		for (var i = 0, t = inputs.length; i < t ; i++) {
