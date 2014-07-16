@@ -19,3 +19,5 @@ def autodiscover():
             continue
         import_module('%s.%s' % (app, module_name))
         app_path = sys.modules['%s.%s' % (app, module_name)]
+
+default_app_config = 'simple_sidebars.apps.SidebarsConfig'
