@@ -3,8 +3,7 @@ def autodiscover():
     module_name = 'simple_widgets'
     import imp
     import sys
-    from django.utils.importlib import import_module
-    
+    from importlib import import_module
     from django.conf import settings
 
     for app in settings.INSTALLED_APPS:

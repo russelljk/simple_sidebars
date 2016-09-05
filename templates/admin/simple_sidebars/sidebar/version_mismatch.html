@@ -9,12 +9,10 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-<ul>
-    <li><a href="{% url 'admin:index' %}">{% trans "Home" %}</a></li>
-    <li><a href="{% url 'admin:app_list' 'simple_sidebars' %}">{% trans "Simple sidebars" %}</a></li>
-    <li><a href="{% url 'admin:simple_sidebars_sidebar_change' sidebar.pk %}">{{ sidebar.title }}</a></li>
-	<li>Version Mismatch</li>
-</ul>
+<a href="{% url 'admin:index' %}">{% trans "Home" %}</a> › 
+<a href="{% url 'admin:app_list' 'simple_sidebars' %}">{% trans "Simple sidebars" %}</a> › 
+<a href="{% url 'admin:simple_sidebars_sidebar_change' sidebar.pk %}">{{ sidebar.title }}</a> › 
+Version Mismatch
 </div>
 {% endblock %}
 

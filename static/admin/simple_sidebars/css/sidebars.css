@@ -1,0 +1,42 @@
+.upwidget,
+.downwidget {
+    background: url('../../img/selector-icons.svg') 0 0px no-repeat;
+    text-indent: -9999em;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.upwidget:hover {
+    background-position: 0px -16px;
+}
+
+.downwidget {
+    background-position: 0px -32px;
+}
+
+.downwidget:hover {
+    background-position: 0px -48px;
+}
+
+a.deletewidget {
+    display: block;
+    background: #ba2121;
+    border-radius: 4px;
+    padding: 5px 8px;
+    height: 15px;
+    line-height: 15px;
+    color: #fff;
+    font-size: smaller;
+}
+
+a.deletewidget:focus,
+a.deletewidget:hover,
+a.deletewidget:active {
+    background: #a41515;
+}
+
+#add_new {
+    margin-right: 10px;
+}

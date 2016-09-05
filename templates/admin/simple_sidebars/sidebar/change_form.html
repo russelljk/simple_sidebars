@@ -1,41 +1,12 @@
 {% extends "admin/change_form.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block after_related_objects %}
 {% if change %}
   <fieldset class="module aligned">
   <h2>{% trans "Sidebar Widgets" %}</h2>
   <div class="form-row" >
-  	 <a id="add_new" class="addlink" href="items/add/">{% trans "Add an widget" %}</a>
-	 <script type="text/javascript">
-	    django.jQuery(function() {
-		    django.jQuery('a#add_new').click(function() {
-		        var loc = django.jQuery(this).attr('href');
-		        var kind = django.jQuery('#widget_kind').val();
-		        django.jQuery(this).attr('href', loc + '?kind=' + kind);
-	        });
-            
-            var warnChanges = function() {
-                return "Your changes have not been saved.";
-            };
-            
-            var warnUser = function() {
-            	var inputs = [];
-            	inputs = inputs.concat(django.jQuery("input"));
-            	inputs = inputs.concat(django.jQuery("select:not(#widget_kind)"));
-            	inputs = inputs.concat(django.jQuery("textarea"));
-            	if (inputs.length > 0) {
-            		for (var i = 0, t = inputs.length; i < t ; i++) {
-                        var inp = inputs[i];
-                        var notSubmit = !inp.closest('.submit-row').length;
-                        inp.change(function() { 
-                            window.onbeforeunload = notSubmit ? warnChanges : null;
-                        });
-            		}
-            	}
-            }();
-	    });		
-	</script>
+  	 <a id="add_new" class="addlink" href="{% url 'admin:simple_sidebars_sidebar_additem' original.pk %}">{% trans "Add an widget" %}</a>
 	  <select id="widget_kind">
   	  {% for k in original.get_item_types %}  	  
   	      <option value="{{k}}">{{k}}</option>
@@ -56,24 +27,24 @@
 		  {% for widget in original.widgets %}
 			<tr class="{% cycle 'row1' 'row2' %}">
 					<th style="width:auto">
-						<a target="widgetEdit" href="items/{{forloop.counter0}}/">{% if widget.title %}{{ widget.title|safe }}{% else %}<em>({{widget.widget_kind}})</em>{% endif %}</a>
+						<a target="widgetEdit" href="{% url 'admin:simple_sidebars_sidebar_edititem' original.pk forloop.counter0 %}">{% if widget.title %}{{ widget.title|safe }}{% else %}<em>({{widget.widget_kind}})</em>{% endif %}</a>
 					</th>
 					<td width="25%">
 						{{ widget.widget_kind }}
 					</td>				
 				    
 					{% if not forloop.last %}
-						<td width="10" align="center"><a href="items/{{forloop.counter0}}/move_down/" title="Move Widget Down"><img src="{{STATIC_URL}}admin/img/arrow_down.png" alt="Down" /></a></td>
+						<td width="10" align="center"><a href="{% url 'admin:simple_sidebars_sidebar_downitem' original.pk forloop.counter0 %}" class="downwidget" title="{% trans 'Move Widget Down' %}">&#x21E9;</a></td>
 					{% else %}
 						<td width="10">&nbsp;</td>
 					{% endif %}
 					
 					{% if not forloop.first %}
-						<td width="10" align="center"><a href="items/{{forloop.counter0}}/move_up/" title="Move Widget Up"><img src="{{STATIC_URL}}admin/img/arrow_up.png" alt="Up" /></a></td>
+						<td width="10" align="center"><a href="{% url 'admin:simple_sidebars_sidebar_upitem' original.pk forloop.counter0 %}" class="upwidget" title="{% trans 'Move Widget Up' %}">&#x21E7;</a></td>
 					{% else %}
 						<td width="10">&nbsp;</td>
 					{% endif %}
-					<td width="10"><a href="items/{{forloop.counter0}}/delete/" title="Delete Widget"><img src="{{STATIC_URL}}admin/img/icon_deletelink.gif" alt="Delete" /></a></td>
+					<td width="10"><a href="{% url 'admin:simple_sidebars_sidebar_deleteitem' original.pk forloop.counter0 %}" class="deletewidget" title="{% trans 'Delete Widget' %}">Delete</a></td>
 			</tr>
 		  {% endfor %}
 		</tbody>

@@ -1,4 +1,8 @@
+{% with sidebar.classes as sidebar_classes and sidebar.html_id as sidebar_id %}
+<div {% if sidebar_classes %}class="{{sidebar_classes}}"{% endif %} {% if sidebar_id %}id="{{sidebar_id}}"{% endif %}>
 {% for widget in widgets %}
     {% load simple_sidebars %}
     {% render_widget widget %}
 {% endfor %}
+</div>
+{% endwith %}
