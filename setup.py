@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='simple_sidebars',
-    version='0.1',
+    version='1.10',
     packages=find_packages(),
     include_package_data=True,
     license='zlib/libpng License',
