@@ -3,7 +3,7 @@ from django.apps import apps
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
 from django.core.cache import cache
-from mylibs.helpers.caching import cache_safe_set, cache_safe_get
+
 
 register = template.Library()
 Sidebar = apps.get_model('simple_sidebars', 'Sidebar')
@@ -88,12 +88,13 @@ class SidebarNode(template.Node):
 
         try:
             if self.cache_time > 0:
-                result = cache_safe_get(self.cache_key)
+                result = cache.get(self.cache_key)
 
                 if not result:
                     sidebar = Sidebar.objects.get(title=self.key)
                     result = self.render_sidebar(sidebar)
-                    cache_safe_set(self.cache_key, result, 1800)
+                    cache.set(self.cache_key, result, 1800)
+
                 return mark_safe(result)
             else:
                 sidebar = Sidebar.objects.get(title=self.key)
