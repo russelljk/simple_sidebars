@@ -35,12 +35,9 @@ Now you need to create sidebars and add widgets to them.
 
 Widgets are assigned to sidebars. Find the section called Sidebar Widgets. Select the widget name from the list. Press "Add an widget".
 
-Like sidebars widgets have a Title, CSS Classes, Template Path.
+Like sidebars widgets have a Title, CSS Classes, Template Path. They also have a Show Title option.
 
-They also have a Show Title option. The title is required but you can hide it by unchecking Show Title.
-
-The rest of the options are specific the the widget.
-
+The rest of the options are specific to different widget types.
 
 ### Creating Widgets
 
@@ -56,10 +53,32 @@ class MyWidget(widgets.Widget):
 
 Since the widget is passed to the template when rendered you can add methods, properties and attributes to help you render the widget.
 
-You can also add custom options which can be set in the admin to control how the widget is displayed and what information is rendered.
+### Widget Media
 
+Any JavaScript or CSS media can be specified on the widget, just like a Django Form.
+
+#### Media Declaration
+
+```python
+class MyWidget(widgets.Widget):
+	class Media:
+		js= (
+			'JavaScript/File/One.js',
+			'JavaScript/File/Two.js',
+		)
+
+		css = {
+			"all": (
+				'CSS/File/One.css',
+				'CSS/File/Two.css',
+			)
+		}
+```
 
 #### Widget Options
+
+Add custom options which can be set in the admin.
+
 
 ```python
 class FollowWidget(widgets.Widget):
@@ -90,4 +109,38 @@ The following is a list of provided options and equivalent form field:
  * BooleanOption (*forms.BooleanField*)
  * ModelSelectOption (*forms.ModelChoiceField*)
 
-You can create your own Option by deriving from WidgetOption. If there is an existing Django form field then it's fairly easy. See widgets.py for examples.
+Create your own Option by deriving from WidgetOption. If there is an existing Django form field then it's fairly easy. See widgets.py for examples.
+
+## Template Tags
+
+First load the tags
+
+	{% load simple_sidebars %}
+
+### `sidebar`
+
+Render a sidebar in your template using the `sidebar` tag.
+
+	{% sidebar 'My Sidebar' %}
+
+Specify a cache time to have it cached.
+
+	{% sidebar 'My Sidebar' 1800 %}
+
+### `sidebar_media`
+
+Render the media (css/js) for a sidebar using the `sidebar_media` tag.
+
+	{% sidebar_media 'My Sidebar' %}
+
+Specify a cache time to have it cached.
+
+	{% sidebar_media 'My Sidebar' 1800 %}
+
+The tag takes the name of the sidebar and the
+
+### `get_sidebar`
+
+A sidebar can be assigned to a variable using the `get_sidebar` tag.
+
+	{% get_sidebar 'My Sidebar' as my_sidebar %}
