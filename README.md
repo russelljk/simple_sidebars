@@ -1,6 +1,6 @@
 # Simple Sidebars
 
-A relatively simple, easy to use but powerful widget and sidebar system for Django.
+A relatively simple, easy to use but powerful widget and sidebar system for Django 1.10.
 
 
 ## Setup
