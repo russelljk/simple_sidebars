@@ -88,7 +88,7 @@ class SidebarNode(template.Node):
 
         try:
             if self.cache_time > 0:
-                result = cache.get(self.cache_key)
+                result = cache.get(self.cache_key, None)
 
                 if not result:
                     sidebar = Sidebar.objects.get(title=self.key)
